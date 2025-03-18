@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class ScoreDataManage {
     private static ScoreDataManage instance;
@@ -77,4 +79,10 @@ public class ScoreDataManage {
         }
     }
 
+    public List<ScoreData> getTop3() {
+        return scoreDataList.stream()
+                .sorted((a, b) -> Double.compare(b.getTotalscore(), a.getTotalscore()))
+                .limit(3)
+                .collect(Collectors.toList());
+    }
 }

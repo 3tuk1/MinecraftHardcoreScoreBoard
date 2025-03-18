@@ -20,6 +20,20 @@ public class ShowScore implements CommandExecutor {
             return true;
         }
 
+        if (args[0].equalsIgnoreCase("me")) {
+            showIndividualScore((Player) sender);
+            return true;
+        }
+
+        // ランキング1位から３位まで表示
+        if (args[0].equalsIgnoreCase("top")) {
+            sender.sendMessage("ランキング1位から3位までのスコア:");
+            ScoreDataManage.getInstance().getTop3().forEach(scoreData -> {
+                sender.sendMessage(scoreData.getPlayerName() + " : " + scoreData.getTotalscore());
+            });
+            return true;
+        }
+
         String playerName = args[0];
         ScoreData scoreData = ScoreDataManage.getInstance().getScoreData(playerName);
 
