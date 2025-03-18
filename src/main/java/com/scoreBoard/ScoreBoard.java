@@ -7,7 +7,7 @@ import com.scoreBoard.Listener.MobKillListener;
 import com.scoreBoard.Listener.MoveListener;
 import com.scoreBoard.Listener.OtherScoreListener;
 import com.scoreBoard.Listener.SpawnerSpawnListener;
-import com.scoreBoard.ScoreCalc.OreBreakListener;
+import com.scoreBoard.Listener.OreBreakListener;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -42,7 +42,7 @@ public final class ScoreBoard extends JavaPlugin implements Listener {
             }
         }
         // コマンドの登録
-        this.getCommand("showscore").setExecutor(new ShowScore());
+        this.getCommand("showscore").setExecutor(new ShowScore(this));
         // ログ　プラグインが有効になったことを通知
         getLogger().info("ScoreBoard Plugin Enabled");
     }

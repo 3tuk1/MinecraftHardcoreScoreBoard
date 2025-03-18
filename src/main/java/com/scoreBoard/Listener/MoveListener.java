@@ -25,6 +25,8 @@ public class MoveListener implements Listener {
                     Location currentLocation = player.getLocation();
 
                     if (lastLocation != null && !lastLocation.equals(currentLocation)) {
+                        currentLocation.set(currentLocation.getX(), 0, currentLocation.getZ());
+                        lastLocation.set(lastLocation.getX(), 0, lastLocation.getZ());
                         double distance = lastLocation.distance(currentLocation);
                         if (distance > 0.1) { // 小さな移動を無視
                             int score = calculateScore(currentLocation, (int) distance);

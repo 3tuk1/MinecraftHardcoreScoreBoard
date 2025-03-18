@@ -1,13 +1,16 @@
 package com.scoreBoard.Listener;
 
 import com.scoreBoard.ScoreCalc.ScoreCalculation;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerHarvestBlockEvent;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +23,8 @@ public class OtherScoreListener implements Listener {
     @EventHandler
     public void onHarvest(PlayerHarvestBlockEvent event) {
         Player player = event.getPlayer();
-        ScoreCalculation.addScore(player, 1, "Other");
+        if (Math.random() < 0.7)
+            ScoreCalculation.addScore(player, 1, "Other");
     }
 
     // 釣りによるポイントの上昇
@@ -36,7 +40,7 @@ public class OtherScoreListener implements Listener {
     @EventHandler
     public void onAdvancement(PlayerAdvancementDoneEvent event) {
         Player player = event.getPlayer();
-        ScoreCalculation.addScore(player, 20, "Other");
+        ScoreCalculation.addScore(player, 40, "Other");
     }
 
     // どのブロックでも100ブロック破壊するとスコアの上昇
@@ -47,6 +51,22 @@ public class OtherScoreListener implements Listener {
         if (blockBreakCount.get(player) >= 100) {
             ScoreCalculation.addScore(player, 20, "Other");
             blockBreakCount.put(player, 0); // カウントをリセット
+        }
+    }
+
+    @EventHandler
+    public void onCraft(PrepareItemCraftEvent event) {
+        // 作業台での作業によるポイントの上昇
+        if (event.getView().getPlayer() instanceof Player) {
+            Player player = (Player) event.getView().getPlayer();
+            if (Math.random() < 0.05)
+                ScoreCalculation.addScore(player, 1, "Other");
+        }
+        // ジュークボックスの作成によるポイントの減少
+        ItemStack result = event.getInventory().getResult();
+        if (result != null && result.getType() == Material.JUKEBOX) {
+            if(Math.random() < 0.5)
+                ScoreCalculation.addScore((Player) event.getView().getPlayer(), -3, "Other");
         }
     }
 }
