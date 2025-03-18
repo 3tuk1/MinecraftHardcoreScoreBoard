@@ -6,7 +6,7 @@ public class ScoreData {
     private int Mobscore;
     private int OreScore;
     private double MoveScore;
-    private int deathCount;
+    private int deathScore;
     private double otherScore;
 
     public ScoreData(String playerName, int Mobscore, int OreScore , double MoveScore, int deathCount,double otherScore) {
@@ -14,7 +14,7 @@ public class ScoreData {
         this.Mobscore = Mobscore;
         this.OreScore = OreScore;
         this.MoveScore = MoveScore;
-        this.deathCount = deathCount;
+        this.deathScore = -deathCount * 750;
         this.otherScore = otherScore;
     }
 
@@ -24,7 +24,11 @@ public class ScoreData {
 
 
     public double getTotalscore() {
-        double BasicScore = (Mobscore + OreScore -(deathCount * 1000));
+        double BasicScore = (Mobscore + OreScore + deathScore);
+        if(BasicScore < 0) {
+            totalscore = ( otherScore) / 4;
+            return totalscore;
+        }
         totalscore = (( BasicScore * ( 1 + MoveScore / 100)) + otherScore) / 4;
         return totalscore;
     }
@@ -50,7 +54,7 @@ public class ScoreData {
     }
 
     public int getDeathScore() {
-        return -deathCount*500;
+        return deathScore;
     }
 
     public void setMoveScore(double MoveScore) {

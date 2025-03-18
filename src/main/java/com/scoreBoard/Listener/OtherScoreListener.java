@@ -40,6 +40,11 @@ public class OtherScoreListener implements Listener {
     // 実績解除によるポイントの上昇
     @EventHandler
     public void onAdvancement(PlayerAdvancementDoneEvent event) {
+        if (event.getAdvancement().getKey().getKey().startsWith("recipes/")) {
+            // レシピの追加はポイントの上昇
+            Player player = event.getPlayer();
+            ScoreCalculation.addScore(player, 5, "Other");
+        }
         Player player = event.getPlayer();
         ScoreCalculation.addScore(player, 40, "Other");
     }
@@ -66,12 +71,11 @@ public class OtherScoreListener implements Listener {
                 craftCount.put(player, 0); // カウントをリセット
             }
         }
-        /*
         // ジュークボックスの作成によるポイントの減少
         ItemStack result = event.getInventory().getResult();
         if (result != null && result.getType() == Material.JUKEBOX) {
             if(Math.random() < 0.5)
                 ScoreCalculation.addScore((Player) event.getView().getPlayer(), -3, "Other");
-        }*/
+        }
     }
 }
