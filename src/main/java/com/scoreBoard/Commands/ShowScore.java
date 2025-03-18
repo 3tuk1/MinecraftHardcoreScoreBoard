@@ -53,26 +53,35 @@ public class ShowScore implements CommandExecutor {
             return true;
         }
 
-        if(args[0].equals("gui")) {
+        if (args[0].equals("gui")) {
             // GUI表示処理をここに追加
             if (isGui.get(sender.getName()) != null && isGui.get(sender.getName())) {
                 sender.sendMessage("既にスコアボードを表示しています。");
                 return true;
             }
-            Tasks = new BukkitRunnable() {
-                // スコアボードを表示する処理をここに追加
-                @Override
-                public void run() {
-                    showScoreboard((Player) sender);
-                }
-            }.runTaskTimer(plugin,0L, 20L);
-
+            if (args.length > 1 && args[1].equals("top")) {
+                Tasks = new BukkitRunnable() {
+                    // スコアボードを表示する処理をここに追加
+                    @Override
+                    public void run() {
+                        showScoreboard((Player) sender, true);
+                    }
+                }.runTaskTimer(plugin, 0L, 20L);
+            } else {
+                Tasks = new BukkitRunnable() {
+                    // スコアボードを表示する処理をここに追加
+                    @Override
+                    public void run() {
+                        showScoreboard((Player) sender, false);
+                    }
+                }.runTaskTimer(plugin, 0L, 20L);
+            }
             isGui.put(sender.getName(), true);
 
             return true;
         }
 
-        if(args[0].equals("nogui")) {
+        if (args[0].equals("nogui")) {
             // GUIを閉じる処理をここに追加
             if (isGui.get(sender.getName()) == null || !isGui.get(sender.getName())) {
                 sender.sendMessage("スコアボードが表示されていません。");
@@ -85,7 +94,7 @@ public class ShowScore implements CommandExecutor {
             return true;
         }
 
-        if(args[0].equals("help")) {
+        if (args[0].equals("help")) {
             sender.sendMessage("スコア表示コマンドの使い方:");
             sender.sendMessage("/showscore <プレイヤー名> : 指定したプレイヤーのスコアを表示します。");
             sender.sendMessage("/showscore all : 全員のスコアを表示します。");
@@ -114,9 +123,9 @@ public class ShowScore implements CommandExecutor {
             player.sendMessage(player.getName() + "のスコア:");
             player.sendMessage("Mobスコア: " + scoreData.getMobscore());
             player.sendMessage("Oreスコア: " + scoreData.getOreScore());
-            player.sendMessage("Moveスコア: " + scoreData.getMoveScore());
+            player.sendMessage("Moveスコア: " +(int) scoreData.getMoveScore());
             player.sendMessage("デススコア: " + scoreData.getDeathScore());
-            player.sendMessage("合計スコア: " + scoreData.getTotalscore());
+            player.sendMessage("合計スコア: " +(int) scoreData.getTotalscore());
         } else {
             player.sendMessage("スコアデータが見つかりません。");
         }
@@ -128,16 +137,14 @@ public class ShowScore implements CommandExecutor {
             sender.sendMessage("====================================");
             sender.sendMessage(scoreData.getPlayerName() + "のスコア:");
             sender.sendMessage("Mobスコア: " + scoreData.getMobscore());
-            sender.sendMessage("Oreスコア: " + scoreData.getOreScore());
-            sender.sendMessage("Moveスコア: " + scoreData.getMoveScore());
+            sender.sendMessage("Oreスコア: " +  scoreData.getOreScore());
+            sender.sendMessage("Moveスコア: " + (int) scoreData.getMoveScore());
             sender.sendMessage("デススコア: " + scoreData.getDeathScore());
-            sender.sendMessage("合計スコア: " + scoreData.getTotalscore());
+            sender.sendMessage("合計スコア: " + (int) scoreData.getTotalscore());
         }
     }
 
-    private void showScoreboard(Player player) {
-
-
+    private void showScoreboard(Player player, boolean isTop) {
         // スコアボードマネージャを取得
         ScoreboardManager manager = Bukkit.getScoreboardManager();
         Scoreboard scoreboard = manager.getNewScoreboard();
@@ -152,23 +159,46 @@ public class ShowScore implements CommandExecutor {
             player.sendMessage("スコアデータが見つかりません。");
             return;
         }
-            Score mobScore = objective.getScore(ChatColor.GREEN + "モブスコア: " + ChatColor.WHITE + scoreData.getMobscore());
-            mobScore.setScore(5);
 
-            Score oreScore = objective.getScore(ChatColor.GREEN + "鉱石スコア: " + ChatColor.WHITE + scoreData.getOreScore());
-            oreScore.setScore(4);
+        Score mobScore = objective.getScore(ChatColor.GREEN + "モブスコア: " + ChatColor.WHITE + scoreData.getMobscore());
+        mobScore.setScore(8);
 
-            Score moveScore = objective.getScore(ChatColor.GREEN + "移動スコア: " + ChatColor.WHITE + (int) scoreData.getMoveScore());
-            moveScore.setScore(3);
+        Score oreScore = objective.getScore(ChatColor.GREEN + "鉱石スコア: " + ChatColor.WHITE + scoreData.getOreScore());
+        oreScore.setScore(7);
 
-            Score deathScore = objective.getScore(ChatColor.GREEN + "デススコア: " + ChatColor.WHITE  + scoreData.getDeathScore());
-            deathScore.setScore(2);
+        Score moveScore = objective.getScore(ChatColor.GREEN + "移動スコア: " + ChatColor.WHITE + (int) scoreData.getMoveScore());
+        moveScore.setScore(6);
 
-            Score totalScore = objective.getScore(ChatColor.GREEN + "合計スコア: " + ChatColor.WHITE + (int) scoreData.getTotalscore());
-            totalScore.setScore(1);
+        Score deathScore = objective.getScore(ChatColor.GREEN + "デススコア: " + ChatColor.WHITE + scoreData.getDeathScore());
+        deathScore.setScore(5);
 
-            // プレイヤーにスコアボードを表示
-            player.setScoreboard(scoreboard);
+        Score totalScore = objective.getScore(ChatColor.GREEN + "合計スコア: " + ChatColor.WHITE + (int) scoreData.getTotalscore());
+        totalScore.setScore(4);
+        if(isTop) {
+            int rank = 1;
+            for (ScoreData topScoreData : ScoreDataManage.getInstance().getTop3()) {
+                ChatColor color;
+                switch (rank) {
+                    case 1:
+                        color = ChatColor.GOLD; // 金
+                        break;
+                    case 2:
+                        color = ChatColor.GRAY; // 銀
+                        break;
+                    case 3:
+                        color = ChatColor.DARK_RED; // 銅
+                        break;
+                    default:
+                        color = ChatColor.WHITE;
+                }
+                Score topScore = objective.getScore(color + "Top" + rank + ": " + topScoreData.getPlayerName() + " - " + (int) topScoreData.getTotalscore());
+                topScore.setScore(rank); // スコアを設定
+                rank++;
+            }
+        }
+
+        // プレイヤーにスコアボードを表示
+        player.setScoreboard(scoreboard);
     }
 
 }

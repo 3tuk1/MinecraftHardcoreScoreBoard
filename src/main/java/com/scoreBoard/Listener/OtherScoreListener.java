@@ -43,10 +43,11 @@ public class OtherScoreListener implements Listener {
         if (event.getAdvancement().getKey().getKey().startsWith("recipes/")) {
             // レシピの追加はポイントの上昇
             Player player = event.getPlayer();
-            ScoreCalculation.addScore(player, 5, "Other");
+            ScoreCalculation.addScore(player, 2, "Other");
+        }else {
+            Player player = event.getPlayer();
+            ScoreCalculation.addScore(player, 30, "Other");
         }
-        Player player = event.getPlayer();
-        ScoreCalculation.addScore(player, 40, "Other");
     }
 
     // どのブロックでも100ブロック破壊するとスコアの上昇

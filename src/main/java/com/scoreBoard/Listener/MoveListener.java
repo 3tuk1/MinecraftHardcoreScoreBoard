@@ -61,7 +61,6 @@ public class MoveListener implements Listener {
         if (event.getExited() instanceof Player) {
             Player player = (Player) event.getExited();
             lastLocations.put(player, player.getLocation());
-            Bukkit.getLogger().info("Player " + player.getName() + " exited from vehicle");
         }
     }
 

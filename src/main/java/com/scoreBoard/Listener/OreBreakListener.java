@@ -28,7 +28,6 @@ public class OreBreakListener implements Listener {
         }
         if (event.getBlock().getType() == Material.COAL_ORE || event.getBlock().getType() == Material.DEEPSLATE_COAL_ORE) {
             // スコア計算ロジックをここに追加
-            //if(Math.random() < 0.8)
             ScoreCalculation.addScore(event.getPlayer(), 2, "Ore");
         }
     }
