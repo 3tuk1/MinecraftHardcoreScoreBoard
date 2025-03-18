@@ -14,7 +14,7 @@ public class ScoreData {
         this.Mobscore = Mobscore;
         this.OreScore = OreScore;
         this.MoveScore = MoveScore;
-        this.deathScore = -deathCount * 750;
+        this.deathScore = -deathCount * 500;
         this.otherScore = otherScore;
     }
 
