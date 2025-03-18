@@ -18,6 +18,7 @@ import java.util.Map;
 public class OtherScoreListener implements Listener {
 
     private final Map<Player, Integer> blockBreakCount = new HashMap<>();
+    private final Map<Player, Integer> craftCount = new HashMap<>();
 
     // 農作業によるポイントの上昇
     @EventHandler
@@ -59,14 +60,18 @@ public class OtherScoreListener implements Listener {
         // 作業台での作業によるポイントの上昇
         if (event.getView().getPlayer() instanceof Player) {
             Player player = (Player) event.getView().getPlayer();
-            if (Math.random() < 0.05)
+            craftCount.put(player, craftCount.getOrDefault(player, 0) + 1);
+            if (craftCount.get(player) >= 10) {
                 ScoreCalculation.addScore(player, 1, "Other");
+                craftCount.put(player, 0); // カウントをリセット
+            }
         }
+        /*
         // ジュークボックスの作成によるポイントの減少
         ItemStack result = event.getInventory().getResult();
         if (result != null && result.getType() == Material.JUKEBOX) {
             if(Math.random() < 0.5)
                 ScoreCalculation.addScore((Player) event.getView().getPlayer(), -3, "Other");
-        }
+        }*/
     }
 }

@@ -51,9 +51,7 @@ public final class ScoreBoard extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
-        // スコアデータを保存
-        ScoreDataManage.getInstance().saveScoreData();
+
     }
 
     @EventHandler

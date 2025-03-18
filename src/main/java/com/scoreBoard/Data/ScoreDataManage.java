@@ -36,7 +36,7 @@ public class ScoreDataManage {
                 data.setMobscore(scoreData.getMobscore());
                 data.setOreScore(scoreData.getOreScore());
                 data.setMoveScore(scoreData.getMoveScore());
-                saveScoreData();
+                saveScoreData(scoreData.getPlayerName());
                 return;
             }
         }
@@ -59,18 +59,20 @@ public class ScoreDataManage {
 
 
 
-    public void saveScoreData() {
+    public void saveScoreData(String playerName) {
         File file = new File(Objects.requireNonNull(Bukkit.getServer().getPluginManager().getPlugin("ScoreBoard")).getDataFolder(), "ScoreData.yml");
-        YamlConfiguration yamlConfiguration = new YamlConfiguration();
+        YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(file);
 
         for (ScoreData scoreData : scoreDataList) {
-            String playerName = scoreData.getPlayerName();
-            yamlConfiguration.set(playerName + ".mobScore", scoreData.getMobscore());
-            yamlConfiguration.set(playerName + ".oreScore", scoreData.getOreScore());
-            yamlConfiguration.set(playerName + ".moveScore", scoreData.getMoveScore());
-            yamlConfiguration.set(playerName + ".deathScore", scoreData.getDeathScore());
-            yamlConfiguration.set(playerName + ".otherScore", scoreData.getOtherScore());
-            yamlConfiguration.set(playerName + ".totalScore", scoreData.getTotalscore());
+            if (scoreData.getPlayerName().equals(playerName)) {
+                yamlConfiguration.set(playerName + ".mobScore", scoreData.getMobscore());
+                yamlConfiguration.set(playerName + ".oreScore", scoreData.getOreScore());
+                yamlConfiguration.set(playerName + ".moveScore", scoreData.getMoveScore());
+                yamlConfiguration.set(playerName + ".deathScore", scoreData.getDeathScore());
+                yamlConfiguration.set(playerName + ".otherScore", scoreData.getOtherScore());
+                yamlConfiguration.set(playerName + ".totalScore", scoreData.getTotalscore());
+                break;
+            }
         }
 
         try {
