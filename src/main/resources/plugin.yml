@@ -1,0 +1,12 @@
+
+api-version: '1.21'
+authors: [ Sirokoke ]
+description: ScoreBoard plugin
+
+name: ScoreBoard
+version: 1.0
+main: com.scoreBoard.ScoreBoard
+commands:
+  showscore:
+    description: プレイヤーのスコアを表示します
+    usage: /showscore [all]
