@@ -34,6 +34,7 @@ public class ShowScore implements CommandExecutor {
             return true;
         }
 
+
         String playerName = args[0];
         ScoreData scoreData = ScoreDataManage.getInstance().getScoreData(playerName);
 
@@ -73,4 +74,5 @@ public class ShowScore implements CommandExecutor {
             sender.sendMessage("合計スコア: " + scoreData.getTotalscore());
         }
     }
+
 }

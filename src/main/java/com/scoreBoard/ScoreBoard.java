@@ -5,6 +5,7 @@ import com.scoreBoard.Data.ScoreData;
 import com.scoreBoard.Data.ScoreDataManage;
 import com.scoreBoard.Listener.MobKillListener;
 import com.scoreBoard.Listener.MoveListener;
+import com.scoreBoard.Listener.OtherScoreListener;
 import com.scoreBoard.Listener.SpawnerSpawnListener;
 import com.scoreBoard.ScoreCalc.OreBreakListener;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -28,6 +29,7 @@ public final class ScoreBoard extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new MoveListener(this), this);
         getServer().getPluginManager().registerEvents(new OreBreakListener(), this);
         getServer().getPluginManager().registerEvents(new MobKillListener(), this);
+        getServer().getPluginManager().registerEvents(new OtherScoreListener(), this);
         getServer().getPluginManager().registerEvents(this, this);
 
         // プラグインフォルダにファイルがなければ作成
@@ -59,10 +61,11 @@ public final class ScoreBoard extends JavaPlugin implements Listener {
             int mobScore = scoreConfig.getInt(playerName + ".mobScore");
             int oreScore = scoreConfig.getInt(playerName + ".oreScore");
             double moveScore = scoreConfig.getDouble(playerName + ".moveScore");
+            double otherScore = scoreConfig.getDouble(playerName + ".otherScore");
             int deathscore = loadDeathScoreConfig(playerName);
-            scoreData = new ScoreData(playerName, mobScore, oreScore, moveScore, deathscore);
+            scoreData = new ScoreData(playerName, mobScore, oreScore, moveScore, deathscore,otherScore);
             // それぞれのスコアを表示
-            getLogger().info("PlayerName: " + playerName + " MobScore: " + mobScore + " OreScore: " + oreScore + " MoveScore: " + moveScore + " DeathScore: " + deathscore);
+            getLogger().info("PlayerName: " + playerName + " MobScore: " + mobScore + " OreScore: " + oreScore + " MoveScore: " + moveScore + " DeathScore: " + deathscore + " OtherScore: " + otherScore);
             ScoreDataManage.getInstance().addScoreData(scoreData);
         }
     }
@@ -74,8 +77,7 @@ public final class ScoreBoard extends JavaPlugin implements Listener {
             saveResource("ScoreData.yml", false);
         }
         scoreConfig = YamlConfiguration.loadConfiguration(scoreFile);
-        // デバッグメッセージ
-        //getLogger().info("ScoreData.yml content: " + scoreConfig.saveToString());
+
     }
 
     private int loadDeathScoreConfig( String playerName) {

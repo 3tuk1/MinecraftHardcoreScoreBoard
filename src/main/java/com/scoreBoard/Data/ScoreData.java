@@ -22,9 +22,6 @@ public class ScoreData {
         return playerName;
     }
 
-    public void setPlayerName(String playerName) {
-        this.playerName = playerName;
-    }
 
     public double getTotalscore() {
         return totalscore = ((Mobscore + OreScore ) * (1+MoveScore/100))-(deathCount * 500)+otherScore;
@@ -56,6 +53,14 @@ public class ScoreData {
 
     public void setMoveScore(double MoveScore) {
         this.MoveScore = MoveScore;
+    }
+
+    public void setOtherScore(double otherScore) {
+        this.otherScore = otherScore;
+    }
+
+    public double getOtherScore() {
+        return otherScore;
     }
 
 }

@@ -16,15 +16,12 @@ public class ScoreCalculation {
             case "Mob" -> scoredata.setMobscore(scoredata.getMobscore() + score);
             case "Ore" -> scoredata.setOreScore(scoredata.getOreScore() + score);
             case "Move" -> scoredata.setMoveScore(scoredata.getMoveScore() + ((double) score /MoveScoremagnification));
+            case "Other" -> scoredata.setOtherScore(scoredata.getOtherScore() + score);
         }
         SDM.setScoreData(scoredata);
     }
 
-    public static void DeathScore(Player player) {
-        // スコアを加算する処理をここに追加
-        ScoreDataManage SDM = ScoreDataManage.getInstance();
 
-    }
 
 
 }

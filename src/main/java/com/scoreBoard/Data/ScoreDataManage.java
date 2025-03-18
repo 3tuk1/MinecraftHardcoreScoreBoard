@@ -69,6 +69,7 @@ public class ScoreDataManage {
             yamlConfiguration.set(playerName + ".oreScore", scoreData.getOreScore());
             yamlConfiguration.set(playerName + ".moveScore", scoreData.getMoveScore());
             yamlConfiguration.set(playerName + ".deathScore", scoreData.getDeathScore());
+            yamlConfiguration.set(playerName + ".otherScore", scoreData.getOtherScore());
             yamlConfiguration.set(playerName + ".totalScore", scoreData.getTotalscore());
         }
 
