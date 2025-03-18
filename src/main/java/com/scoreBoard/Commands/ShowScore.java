@@ -17,9 +17,12 @@ import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ShowScore implements CommandExecutor {
     private final JavaPlugin plugin;
-    private boolean isGui = false;
+    private Map<String, Boolean> isGui = new HashMap<>();
     private BukkitTask Tasks;
     public ShowScore(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -52,7 +55,7 @@ public class ShowScore implements CommandExecutor {
 
         if(args[0].equals("gui")) {
             // GUI表示処理をここに追加
-            if (isGui) {
+            if (isGui.get(sender.getName()) != null && isGui.get(sender.getName())) {
                 sender.sendMessage("既にスコアボードを表示しています。");
                 return true;
             }
@@ -64,21 +67,21 @@ public class ShowScore implements CommandExecutor {
                 }
             }.runTaskTimer(plugin,0L, 20L);
 
-            isGui = true;
+            isGui.put(sender.getName(), true);
 
             return true;
         }
 
         if(args[0].equals("nogui")) {
             // GUIを閉じる処理をここに追加
-            if (!isGui) {
+            if (isGui.get(sender.getName()) == null || !isGui.get(sender.getName())) {
                 sender.sendMessage("スコアボードが表示されていません。");
                 return true;
             }
             Tasks.cancel();
             Player player = (Player) sender;
             player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
-            isGui = false;
+            isGui.put(sender.getName(), false);
             return true;
         }
 

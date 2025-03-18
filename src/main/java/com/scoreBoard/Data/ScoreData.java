@@ -24,7 +24,7 @@ public class ScoreData {
 
 
     public double getTotalscore() {
-        return totalscore = (((Mobscore + OreScore -(deathCount * 1000)) * ( 1 + MoveScore / 100)) + otherScore) / 10;
+        return totalscore = (((Mobscore + OreScore -(deathCount * 1000)) * ( 1 + MoveScore / 100)) + otherScore) / 4;
     }
 
     public int getMobscore() {

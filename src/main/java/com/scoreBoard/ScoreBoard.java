@@ -33,6 +33,8 @@ public final class ScoreBoard extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
 
         // プラグインフォルダにファイルがなければ作成
+        getDataFolder().mkdir();
+
         File scoreFile = new File(getDataFolder(), "ScoreData.yml");
         if (!scoreFile.exists()) {
             try {
@@ -50,6 +52,8 @@ public final class ScoreBoard extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        // スコアデータを保存
+        ScoreDataManage.getInstance().saveScoreData();
     }
 
     @EventHandler
@@ -85,6 +89,8 @@ public final class ScoreBoard extends JavaPlugin implements Listener {
         File DscoreFile = new File(getDataFolder().getParentFile(), "WorldResetPlugin/death_records.yml");
         if (!DscoreFile.exists()) {
             try {
+                getLogger().info("DeathRecords.ymlファイルが見つかりませんでした。");
+                getLogger().info("新規作成します。"+ DscoreFile.getAbsolutePath());
                 DscoreFile.createNewFile();
             } catch (IOException e) {
                 getLogger().info("DeathRecords.ymlファイルが見つかりませんでした。");

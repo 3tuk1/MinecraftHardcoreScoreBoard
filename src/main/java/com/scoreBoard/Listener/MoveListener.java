@@ -5,7 +5,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -21,23 +23,23 @@ public class MoveListener implements Listener {
             @Override
             public void run() {
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    Location lastLocation = lastLocations.get(player);
-                    Location currentLocation = player.getLocation();
-
-                    if (lastLocation != null && !lastLocation.equals(currentLocation)) {
-                        currentLocation.set(currentLocation.getX(), 0, currentLocation.getZ());
-                        lastLocation.set(lastLocation.getX(), 0, lastLocation.getZ());
-                        double distance = lastLocation.distance(currentLocation);
-                        if (distance > 0.1) { // 小さな移動を無視
-                            int score = calculateScore(currentLocation, (int) distance);
-                            pendingScores.put(player, pendingScores.getOrDefault(player, 0) + score);
+                    if (!player.isInsideVehicle()) {
+                        Location lastLocation = lastLocations.get(player);
+                        Location currentLocation = player.getLocation();
+                        if (lastLocation != null && lastLocation.getWorld().equals(currentLocation.getWorld()) && !lastLocation.equals(currentLocation)) {
+                            currentLocation.set(currentLocation.getX(), 0, currentLocation.getZ());
+                            lastLocation.set(lastLocation.getX(), 0, lastLocation.getZ());
+                            double distance = lastLocation.distance(currentLocation);
+                            if (distance > 0.1) {
+                                int score = calculateScore(currentLocation, (int) distance);
+                                pendingScores.put(player, pendingScores.getOrDefault(player, 0) + score);
+                            }
                         }
+                        lastLocations.put(player, currentLocation);
                     }
-
-                    lastLocations.put(player, currentLocation);
                 }
             }
-        }.runTaskTimer(plugin, 0L, 20L); // 200L = 10秒 (20 ticks * 10秒)
+        }.runTaskTimer(plugin, 0L, 20L);
 
         new BukkitRunnable() {
             @Override
@@ -51,22 +53,27 @@ public class MoveListener implements Listener {
                 }
                 pendingScores.clear();
             }
-        }.runTaskTimerAsynchronously(plugin, 0L, 200L); // 非同期でスコアを加算
+        }.runTaskTimerAsynchronously(plugin, 0L, 200L);
+    }
+
+    @EventHandler
+    public void onVehicleExit(VehicleExitEvent event) {
+        if (event.getExited() instanceof Player) {
+            Player player = (Player) event.getExited();
+            lastLocations.put(player, player.getLocation());
+            Bukkit.getLogger().info("Player " + player.getName() + " exited from vehicle");
+        }
     }
 
     private int calculateScore(Location location, int distance) {
         World world = location.getWorld();
         if (world != null) {
             if (world.getName().equals("world_nether")) {
-                int score = (int) (distance * 1.3);
-                return score;
+                return (int) (distance * 1.3);
             } else if (world.getName().equals("world_the_end")) {
-                int score = (int) (distance * 1.5);
-                return score;
+                return (int) (distance * 1.5);
             }
         }
-        return distance; // 通常のワールドではそのまま
+        return distance;
     }
-
-
 }
