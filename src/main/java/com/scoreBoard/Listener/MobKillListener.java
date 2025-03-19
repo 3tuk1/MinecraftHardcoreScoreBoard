@@ -61,7 +61,7 @@ public class MobKillListener implements Listener {
                         break;
                     case "EnderDragon":
                         // スコア計算ロジックをここに追加
-                        ScoreCalculation.addScore(player, 150,  "Mob");
+                        ScoreCalculation.addScore(player, 200,  "Mob");
                         break;
                     case "Wither":
                         // スコア計算ロジックをここに追加

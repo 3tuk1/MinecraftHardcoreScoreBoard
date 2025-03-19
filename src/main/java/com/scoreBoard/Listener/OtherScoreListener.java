@@ -2,10 +2,12 @@ package com.scoreBoard.Listener;
 
 import com.scoreBoard.ScoreCalc.ScoreCalculation;
 import org.bukkit.Material;
+import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerHarvestBlockEvent;
@@ -76,7 +78,18 @@ public class OtherScoreListener implements Listener {
         ItemStack result = event.getInventory().getResult();
         if (result != null && result.getType() == Material.JUKEBOX) {
             if(Math.random() < 0.5)
-                ScoreCalculation.addScore((Player) event.getView().getPlayer(), -3, "Other");
+                ScoreCalculation.addScore((Player) event.getView().getPlayer(), -300, "Other");
+        }
+    }
+
+    // エンドクリスタルの破壊によるポイントの上昇
+    @EventHandler
+    public void onEnderCrystalExplode(EntityExplodeEvent event) {
+        if (event.getEntity() instanceof EnderCrystal) {
+            if (event.getEntity().getLastDamageCause() != null && event.getEntity().getLastDamageCause().getEntity() instanceof Player) {
+                Player player = (Player) event.getEntity().getLastDamageCause().getEntity();
+                ScoreCalculation.addScore(player, 50, "Mob");
+            }
         }
     }
 }

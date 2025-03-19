@@ -26,10 +26,10 @@ public class ScoreData {
     public double getTotalscore() {
         double BasicScore = (Mobscore + OreScore + deathScore);
         if(BasicScore < 0) {
-            totalscore = ( otherScore) / 4;
+            totalscore = ( otherScore) / 5;
             return totalscore;
         }
-        totalscore = (( BasicScore * ( 1 + MoveScore / 100)) + otherScore) / 4;
+        totalscore = (( BasicScore * ( 1 + MoveScore / 100)) + otherScore) / 5;
         return totalscore;
     }
 
