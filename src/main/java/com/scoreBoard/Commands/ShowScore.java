@@ -6,26 +6,24 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.ScoreboardManager;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class ShowScore implements CommandExecutor {
-    private final JavaPlugin plugin;
-    private Map<String, Boolean> isGui = new HashMap<>();
-    private BukkitTask Tasks;
+    private static JavaPlugin plugin;
     public ShowScore(JavaPlugin plugin) {
-        this.plugin = plugin;
+        ShowScore.plugin = plugin;
+    }
+    private static final ShowTask showTask = ShowTask.getInstance();
+
+    static {
+        // スコアボード表示タスクを一秒ごとに実行
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                showTask.showScoreboard();
+            }
+        }.runTaskTimer(plugin, 0L, 20L);
     }
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -55,42 +53,22 @@ public class ShowScore implements CommandExecutor {
 
         if (args[0].equals("gui")) {
             // GUI表示処理をここに追加
-            if (isGui.get(sender.getName()) != null && isGui.get(sender.getName())) {
-                sender.sendMessage("既にスコアボードを表示しています。");
+            if(showTask.isGuiTask((Player) sender)) {
+                sender.sendMessage("スコアボードを非表示にします。");
+                showTask.showTaskRemove((Player) sender);
                 return true;
             }
-            if (args.length > 1 && args[1].equals("top")) {
-                Tasks = new BukkitRunnable() {
-                    // スコアボードを表示する処理をここに追加
-                    @Override
-                    public void run() {
-                        showScoreboard((Player) sender, true);
-                    }
-                }.runTaskTimer(plugin, 0L, 20L);
-            } else {
-                Tasks = new BukkitRunnable() {
-                    // スコアボードを表示する処理をここに追加
-                    @Override
-                    public void run() {
-                        showScoreboard((Player) sender, false);
-                    }
-                }.runTaskTimer(plugin, 0L, 20L);
-            }
-            isGui.put(sender.getName(), true);
 
+            if (args.length == 2 && args[1].equals("top")) {
+                showTask.showTaskAdd((Player) sender, true);
+            } else {
+                showTask.showTaskAdd((Player) sender, false);
+            }
             return true;
         }
 
         if (args[0].equals("nogui")) {
-            // GUIを閉じる処理をここに追加
-            if (isGui.get(sender.getName()) == null || !isGui.get(sender.getName())) {
-                sender.sendMessage("スコアボードが表示されていません。");
-                return true;
-            }
-            Tasks.cancel();
-            Player player = (Player) sender;
-            player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
-            isGui.put(sender.getName(), false);
+
             return true;
         }
 
@@ -101,6 +79,8 @@ public class ShowScore implements CommandExecutor {
             sender.sendMessage("/showscore me : 自分のスコアを表示します。");
             sender.sendMessage("/showscore top : ランキング1位から3位までのスコアを表示します。");
             sender.sendMessage("/showscore gui : スコアボードを表示します。");
+            sender.sendMessage("/showscore nogui : スコアボードを非表示にします。");
+            sender.sendMessage("/showscore gui top : スコアボードにランキングを表示します。");
             return true;
         }
 
@@ -144,61 +124,8 @@ public class ShowScore implements CommandExecutor {
         }
     }
 
-    private void showScoreboard(Player player, boolean isTop) {
-        // スコアボードマネージャを取得
-        ScoreboardManager manager = Bukkit.getScoreboardManager();
-        Scoreboard scoreboard = manager.getNewScoreboard();
 
-        // スコアボードのタイトルと表示スロットを設定
-        Objective objective = scoreboard.registerNewObjective("scoreboard", "dummy", ChatColor.GOLD + "スコアボード");
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-        // スコアデータを取得
-        ScoreData scoreData = ScoreDataManage.getInstance().getScoreData(player.getName());
-        if (scoreData == null) {
-            player.sendMessage("スコアデータが見つかりません。");
-            return;
-        }
 
-        Score mobScore = objective.getScore(ChatColor.GREEN + "モブスコア: " + ChatColor.WHITE + scoreData.getMobscore());
-        mobScore.setScore(8);
-
-        Score oreScore = objective.getScore(ChatColor.GREEN + "鉱石スコア: " + ChatColor.WHITE + scoreData.getOreScore());
-        oreScore.setScore(7);
-
-        Score moveScore = objective.getScore(ChatColor.GREEN + "移動スコア: " + ChatColor.WHITE + (int) scoreData.getMoveScore());
-        moveScore.setScore(6);
-
-        Score deathScore = objective.getScore(ChatColor.GREEN + "デススコア: " + ChatColor.WHITE + scoreData.getDeathScore());
-        deathScore.setScore(5);
-
-        Score totalScore = objective.getScore(ChatColor.GREEN + "合計スコア: " + ChatColor.WHITE + (int) scoreData.getTotalscore());
-        totalScore.setScore(4);
-        if(isTop) {
-            int rank = 1;
-            for (ScoreData topScoreData : ScoreDataManage.getInstance().getTop3()) {
-                ChatColor color;
-                switch (rank) {
-                    case 1:
-                        color = ChatColor.GOLD; // 金
-                        break;
-                    case 2:
-                        color = ChatColor.GRAY; // 銀
-                        break;
-                    case 3:
-                        color = ChatColor.DARK_RED; // 銅
-                        break;
-                    default:
-                        color = ChatColor.WHITE;
-                }
-                Score topScore = objective.getScore(color + "Top" + rank + ": " + topScoreData.getPlayerName() + " - " + (int) topScoreData.getTotalscore());
-                topScore.setScore(rank); // スコアを設定
-                rank++;
-            }
-        }
-
-        // プレイヤーにスコアボードを表示
-        player.setScoreboard(scoreboard);
-    }
 
 }

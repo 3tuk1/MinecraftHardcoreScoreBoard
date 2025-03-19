@@ -30,5 +30,9 @@ public class OreBreakListener implements Listener {
             // スコア計算ロジックをここに追加
             ScoreCalculation.addScore(event.getPlayer(), 2, "Ore");
         }
+        if (event.getBlock().getType() == Material.LAPIS_ORE || event.getBlock().getType() == Material.DEEPSLATE_LAPIS_ORE) {
+            // スコア計算ロジックをここに追加
+            ScoreCalculation.addScore(event.getPlayer(), 3, "Ore");
+        }
     }
 }
