@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerHarvestBlockEvent;
@@ -82,14 +82,5 @@ public class OtherScoreListener implements Listener {
         }
     }
 
-    // エンドクリスタルの破壊によるポイントの上昇
-    @EventHandler
-    public void onEnderCrystalExplode(EntityExplodeEvent event) {
-        if (event.getEntity() instanceof EnderCrystal) {
-            if (event.getEntity().getLastDamageCause() != null && event.getEntity().getLastDamageCause().getEntity() instanceof Player) {
-                Player player = (Player) event.getEntity().getLastDamageCause().getEntity();
-                ScoreCalculation.addScore(player, 50, "Mob");
-            }
-        }
-    }
+
 }

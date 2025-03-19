@@ -1,11 +1,13 @@
 package com.scoreBoard.Listener;
 
 import com.scoreBoard.ScoreCalc.ScoreCalculation;
+import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.Material;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class BlockBreakListener implements Listener {
 
@@ -55,6 +57,15 @@ public class BlockBreakListener implements Listener {
                 // スコア計算ロジックをここに追加
                 ScoreCalculation.addScore(event.getPlayer(), 2, "Other");
             }
+        }
+    }
+
+    /// エンドクリスタルの破壊によるポイントの上昇
+    @EventHandler
+    public void onEnderCrystalDamage(EntityDamageByEntityEvent event) {
+        if (event.getEntity() instanceof EnderCrystal && event.getDamager() instanceof Player) {
+            Player player = (Player) event.getDamager();
+            ScoreCalculation.addScore(player, 25, "Mob");
         }
     }
 }

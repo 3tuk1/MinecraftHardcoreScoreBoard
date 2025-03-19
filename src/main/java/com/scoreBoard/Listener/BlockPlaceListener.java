@@ -30,7 +30,7 @@ public class BlockPlaceListener implements Listener {
                 block.getType() == Material.DEEPSLATE_IRON_ORE || block.getType() == Material.DEEPSLATE_GOLD_ORE ||
                 block.getType() == Material.DEEPSLATE_LAPIS_ORE || block.getType() == Material.DEEPSLATE_DIAMOND_ORE ||
                 block.getType() == Material.DEEPSLATE_EMERALD_ORE || block.getType() == Material.DEEPSLATE_REDSTONE_ORE ||
-                block.getType() == Material.DEEPSLATE_COPPER_ORE)
+                block.getType() == Material.DEEPSLATE_COPPER_ORE )
                 {
             block.setMetadata("placedByPlayer", new FixedMetadataValue(plugin, true));
         }
