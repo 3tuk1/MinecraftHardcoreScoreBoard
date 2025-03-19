@@ -13,13 +13,13 @@ public class ShowScore implements CommandExecutor {
     private static final ShowTask showTask = ShowTask.getInstance();
 
     public ShowScore(JavaPlugin plugin) {
-        // スコアボード表示タスクを一秒ごとに実行
+        // スコアボード表示タスクを0.5秒ごとに実行
         new BukkitRunnable() {
             @Override
             public void run() {
                 showTask.showScoreboard();
             }
-        }.runTaskTimer(plugin, 0L, 20L);
+        }.runTaskTimer(plugin, 0L, 6L);
     }
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -55,16 +55,19 @@ public class ShowScore implements CommandExecutor {
                 return true;
             }
 
-            if (args.length == 2 && args[1].equals("top")) {
-                showTask.showTaskAdd((Player) sender, true);
+            if(args.length == 2 && args[1].equals("toponly")) {
+                showTask.showTaskAdd((Player) sender, true, true);
+            }else if (args.length == 2 && args[1].equals("top")) {
+                showTask.showTaskAdd((Player) sender, true, false);
             } else {
-                showTask.showTaskAdd((Player) sender, false);
+                showTask.showTaskAdd((Player) sender, false, false);
             }
+
             return true;
         }
 
         if (args[0].equals("nogui")) {
-
+            showTask.showTaskRemove((Player) sender);
             return true;
         }
 

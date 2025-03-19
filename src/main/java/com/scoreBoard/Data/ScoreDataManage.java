@@ -5,6 +5,8 @@ import org.bukkit.Bukkit;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
@@ -87,5 +89,18 @@ public class ScoreDataManage {
                 .sorted((a, b) -> Double.compare(b.getTotalscore(), a.getTotalscore()))
                 .limit(3)
                 .collect(Collectors.toList());
+    }
+
+    // プレイヤーの順位取得する
+    public int getRank(Player player) {
+        List<ScoreData> sortedList = scoreDataList.stream()
+                .sorted((a, b) -> Double.compare(b.getTotalscore(), a.getTotalscore()))
+                .toList();
+        for (int i = 0; i < sortedList.size(); i++) {
+            if (sortedList.get(i).getPlayerName().equals(player.getName())) {
+                return i + 1;
+            }
+        }
+        return -1;
     }
 }

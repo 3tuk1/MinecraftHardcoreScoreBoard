@@ -12,16 +12,27 @@ import java.util.Map;
 
 public class ShowTask {
     private static ShowTask instance;
-    private final Map<Player, Boolean> guitask = new HashMap<>();
+    private final Map<Player, ViewTask> guitask = new HashMap<>();
+    private class ViewTask {
+        public boolean isTop;
+        public boolean isToponly;
+    }
+
     private ShowTask() {
     }
-    public void showTaskAdd(Player player, boolean istop) {
-        this.guitask.put(player, istop);
+
+    public synchronized void showTaskAdd(Player player, boolean istop, boolean istoponly) {
+        ViewTask viewTask = new ViewTask();
+        viewTask.isTop = istop;
+        viewTask.isToponly = istoponly;
+        this.guitask.put(player, viewTask);
     }
-    public void showTaskRemove(Player player) {
+
+    public synchronized void showTaskRemove(Player player) {
         this.guitask.remove(player);
         showEmpty(player);
     }
+
     public static ShowTask getInstance() {
         if (instance == null) {
             instance = new ShowTask();
@@ -29,7 +40,7 @@ public class ShowTask {
         return instance;
     }
 
-    public boolean isGuiTask(Player player) {
+    public synchronized boolean isGuiTask(Player player) {
         return guitask.containsKey(player);
     }
 
@@ -38,16 +49,16 @@ public class ShowTask {
         player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
     }
 
-    public void showScoreboard() {
+    public synchronized void showScoreboard() {
         // Mapの中身が空の場合は処理を終了
         if (guitask.isEmpty()) {
             return;
         }
-        for(Map.Entry<Player, Boolean> entry : guitask.entrySet()) {
-
+        for (Map.Entry<Player, ViewTask> entry : guitask.entrySet()) {
             Player player = entry.getKey();
-            boolean isTop = entry.getValue();
-
+            ViewTask viewTask = entry.getValue();
+            boolean isTop = viewTask.isTop;
+            boolean isToponly = viewTask.isToponly;
 
             // スコアボードマネージャを取得
             ScoreboardManager manager = Bukkit.getScoreboardManager();
@@ -63,21 +74,26 @@ public class ShowTask {
                 player.sendMessage("スコアデータが見つかりません。");
                 return;
             }
+            if(!isToponly) {
+                Score mobScore = objective.getScore(ChatColor.GREEN + "モブスコア: " + ChatColor.WHITE + scoreData.getMobscore());
+                mobScore.setScore(8);
 
-            Score mobScore = objective.getScore(ChatColor.GREEN + "モブスコア: " + ChatColor.WHITE + scoreData.getMobscore());
-            mobScore.setScore(8);
+                Score oreScore = objective.getScore(ChatColor.GREEN + "鉱石スコア: " + ChatColor.WHITE + scoreData.getOreScore());
+                oreScore.setScore(7);
 
-            Score oreScore = objective.getScore(ChatColor.GREEN + "鉱石スコア: " + ChatColor.WHITE + scoreData.getOreScore());
-            oreScore.setScore(7);
+                Score moveScore = objective.getScore(ChatColor.GREEN + "移動スコア: " + ChatColor.WHITE + (int) scoreData.getMoveScore());
+                moveScore.setScore(6);
 
-            Score moveScore = objective.getScore(ChatColor.GREEN + "移動スコア: " + ChatColor.WHITE + (int) scoreData.getMoveScore());
-            moveScore.setScore(6);
+                Score deathScore = objective.getScore(ChatColor.GREEN + "デススコア: " + ChatColor.WHITE + scoreData.getDeathScore());
+                deathScore.setScore(5);
 
-            Score deathScore = objective.getScore(ChatColor.GREEN + "デススコア: " + ChatColor.WHITE + scoreData.getDeathScore());
-            deathScore.setScore(5);
-
-            Score totalScore = objective.getScore(ChatColor.GREEN + "合計スコア: " + ChatColor.WHITE + (int) scoreData.getTotalscore());
-            totalScore.setScore(4);
+                Score totalScore = objective.getScore(ChatColor.GREEN + "合計スコア: " + ChatColor.WHITE + (int) scoreData.getTotalscore());
+                totalScore.setScore(4);
+            }else {
+                // 自分の順位とスコアを表示
+                Score myScore = objective.getScore(ChatColor.GREEN +"" + ScoreDataManage.getInstance().getRank(player) + "位: " + ChatColor.WHITE + (int) scoreData.getTotalscore());
+                myScore.setScore(4);
+            }
             if (isTop) {
                 int rank = 1;
                 for (ScoreData topScoreData : ScoreDataManage.getInstance().getTop3()) {

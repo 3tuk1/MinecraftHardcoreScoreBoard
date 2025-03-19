@@ -1,17 +1,15 @@
 package com.scoreBoard;
 
 import com.scoreBoard.Commands.ShowScore;
+import com.scoreBoard.Commands.ShowTask;
 import com.scoreBoard.Data.ScoreData;
 import com.scoreBoard.Data.ScoreDataManage;
-import com.scoreBoard.Listener.MobKillListener;
-import com.scoreBoard.Listener.MoveListener;
-import com.scoreBoard.Listener.OtherScoreListener;
-import com.scoreBoard.Listener.SpawnerSpawnListener;
-import com.scoreBoard.Listener.OreBreakListener;
+import com.scoreBoard.Listener.*;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -27,9 +25,10 @@ public final class ScoreBoard extends JavaPlugin implements Listener {
         // Plugin startup logic
         getServer().getPluginManager().registerEvents(new SpawnerSpawnListener(), this);
         getServer().getPluginManager().registerEvents(new MoveListener(this), this);
-        getServer().getPluginManager().registerEvents(new OreBreakListener(), this);
+        getServer().getPluginManager().registerEvents(new BlockBreakListener(), this);
         getServer().getPluginManager().registerEvents(new MobKillListener(), this);
         getServer().getPluginManager().registerEvents(new OtherScoreListener(), this);
+        getServer().getPluginManager().registerEvents(new BlockPlaceListener(this), this);
         getServer().getPluginManager().registerEvents(this, this);
 
         // プラグインフォルダにファイルがなければ作成
@@ -70,6 +69,11 @@ public final class ScoreBoard extends JavaPlugin implements Listener {
             getLogger().info("PlayerName: " + playerName + " MobScore: " + mobScore + " OreScore: " + oreScore + " MoveScore: " + moveScore + " DeathScore: " + deathscore + " OtherScore: " + otherScore);
             ScoreDataManage.getInstance().addScoreData(scoreData);
         }
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        ShowTask.getInstance().showTaskRemove(event.getPlayer());
     }
 
     private void loadScoreConfig() {
