@@ -10,13 +10,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class ShowScore implements CommandExecutor {
-    private static JavaPlugin plugin;
-    public ShowScore(JavaPlugin plugin) {
-        ShowScore.plugin = plugin;
-    }
     private static final ShowTask showTask = ShowTask.getInstance();
 
-    static {
+    public ShowScore(JavaPlugin plugin) {
         // スコアボード表示タスクを一秒ごとに実行
         new BukkitRunnable() {
             @Override
